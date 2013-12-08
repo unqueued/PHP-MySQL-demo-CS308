@@ -1,0 +1,47 @@
+Files:
+All_events_ive_organized.php:
+	All events that you have organized, and number of attending
+
+common.inc:
+	Common functions used accross the project
+
+index.php:
+	Index, main menu
+
+logout.php:
+	Logs out and detroys session
+
+issue_invitations.php:
+	Where the user can select an event, and issue invitations to
+	their friends
+
+login.php:
+	Authenticates users, and creates sessions
+
+organize_event.php:
+	Creates an event for the user
+
+schedule_for_today.php:
+	Shows events that the user has accepted, that take place at
+	the current date
+
+select_friend_view_events.php:
+	Allows the user to select from their list of friends,
+	and jump to view_friend_sechdeule.php to view their schedules
+
+view_friend_sechdeule.php:
+	Allows you to view the specified friend's schedule, as
+	their permissions allow
+
+view_answer_invites.php:
+	Allows you to view the events you have been invited to, and
+	respond to them.
+
+view_my_schedule.php:
+	Presents you with a menu to select a date range,
+	then submits to itself and presents all events within that range.
+
+
+Added files:
+all_events_for_user.php:
+	Dumps all events by user

@@ -1,0 +1,128 @@
+Queries:
+
+
+All events that a user has organized, and number of people
+attending:
+
+select event.eid as Event_ID, count(*) as attending
+from event, invited
+where event.eid = invited.eid and event.pid = ? and
+invited.response = '1' group by event.eid
+
+
+Add invitation in state not accepted yet, and uses default privacy value:
+
+INSERT INTO invited (pid, eid, response, visibility)
+VALUES (
+	?,
+	?,
+	0,
+	(select d_privacy from person where pid = ?)
+);
+
+
+Returns the organizer of the event"
+
+select pid from event where eid = ?
+
+
+Updates an invitation with a response:
+
+UPDATE invited
+SET response = ?, visibility = ?
+WHERE invited.pid = ? AND invited.eid = ?;
+
+
+Finds all events organized by someone:
+
+select eid, description, start_time, duration
+from event
+where pid = ?
+
+
+Checks whether a username/password tuple exists:
+
+SELECT fname, lname FROM person WHERE pid = ? AND passwd = MD5(?)
+
+
+Inserts a new event entry into the events table:
+
+INSERT INTO `event` (
+	eid,
+	start_time,
+	duration,
+	description,
+	pid
+)
+VALUES (
+	NULL,
+	?,
+	?,
+	?,
+	?
+)
+
+Inserts a row to change an invitation to accepted, and uses default privacy value:
+
+INSERT INTO invited (pid, eid, response, visibility)
+VALUES (
+	?,
+	?,
+	1,
+	(select d_privacy from person where pid = ?)
+);
+
+
+Inserts an entry into the eventdate table to add an entry on
+specified dates:
+
+INSERT INTO eventdate (eid, edate) 
+VALUES (?, ?);
+
+
+Returns the events for a specified user that take place on the current date:
+
+select invited.pid, event.eid, response, visibility, start_time, duration, description, edate
+from invited, event, eventdate
+where invited.eid = event.eid and eventdate.eid = invited.eid and
+invited.pid = ? and response = '1' and 
+edate = ?
+
+
+Selects "friends," other users that have an enty for you in the friend_of table:
+
+select sharer from friend_of where viewer = ?
+
+
+Returns a list of events that you have been invited to, that have not been responded to yet.
+Also returns a concatenated string containing the dates that each event falls on.
+
+select event.eid, event.description, event.pid as invited_by,
+	event.start_time, event.duration,
+	group_concat(edate ORDER BY edate DESC SEPARATOR ', ') as dates
+from invited, event, eventdate
+where invited.eid = event.eid and invited.pid = ? and response = '0'
+and eventdate.eid = event.eid
+group by event.eid
+
+
+Returns a users's default privacy setting:
+
+select d_privacy from person where pid = ?
+
+
+Returns information about the current user, as well as privacy level of another user relative to
+current user, visible
+
+select invited.pid, invited.eid, event.start_time, event.duration, eventdate.edate, event.description,
+	(level - visibility) as visible from invited, friend_of, event, eventdate
+where invited.pid = friend_of.sharer and  invited.pid = ? and viewer = ? and
+response = '1' and invited.eid = event.eid and eventdate.eid = event.eid
+
+
+Returns events that the user is attending, that fall within two specified dates:
+
+select invited.pid, start_time, duration, description, edate
+from invited, event, eventdate
+where invited.eid = event.eid and eventdate.eid = invited.eid and
+invited.pid = ? and response = '1' and edate >= ? and edate <= ?
